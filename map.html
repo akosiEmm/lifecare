@@ -1,0 +1,206 @@
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>location pin</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            color: #313131;
+
+        }
+
+        .google_map_now {
+            margin: 35px 50px 120px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        #infoPanel {
+            margin-bottom: 20px;
+        }
+
+        #mapCanvas {
+            width: 100%;
+            height: 440px;
+        }
+
+        .location_open {
+            color: #2f5bf6;
+            font-size: 17px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.3s ease;
+        }
+
+        .location_open:hover {
+            color: #313131;
+        }
+
+        .btn_are {
+            display: block;
+            margin: 0 auto;
+            width: 200px;
+        }
+
+        .btn_are .btn_b {
+            width: 100%;
+            height: 45px;
+            margin-top: 15px;
+            background: #2f5bf6;
+            color: #fff;
+            font-size: 17px;
+            text-transform: capitalize;
+            border-radius: 6px;
+            border: none !important;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s ease;
+        }
+
+        .btn_are .btn_b:hover {
+            background: #313131;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="google_map_now">
+        <div id="infoPanel">
+            <b>Posisi Lat Long:</b>
+            <div id="info"></div>
+            <b>URL:</b>
+            <a class="location_open" href="" id="url" target="_blank">openMap</a>
+        </div>
+        <div id="mapCanvas"></div>
+
+
+        <div class="btn_are">
+            <a class="btn_b" target="_blank"
+                href="https://developers.google.com/maps/documentation/javascript/examples/marker-labels#maps_marker_labels-javascript">Help</a>
+        </div>
+    </div>
+
+
+
+
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script type="text/javascript">
+        var geocoder = new google.maps.Geocoder();
+
+        function geocodePosition(pos) {
+            geocoder.geocode({
+                latLng: pos
+            }, function (responses) {
+                if (responses && responses.length > 0) {
+                    updateMarkerAddress(responses[0].formatted_address);
+                } else {
+                    updateMarkerAddress('Cannot determine address at this location.');
+                }
+            });
+        }
+
+        function updateMarkerStatus(str) {
+            document.getElementById('markerStatus').innerHTML = str;
+        }
+
+        function updateMarkerPosition(latLng) {
+            document.getElementById('info').innerHTML = [
+                latLng.lat(),
+                latLng.lng()
+            ].join(', ');
+        }
+
+        function updateMarkerAddress(str) {
+            document.getElementById('address').innerHTML = str;
+        }
+
+        function updateMarkerURL(str) {
+            var pos = [str.lat(), str.lng()].join(',');
+            var link = "https://www.google.com/maps/search/?api=1&query=" + pos;
+
+            var htmlLink = document.getElementById("url");
+            htmlLink.innerHTML = "Open Maps";
+            htmlLink.setAttribute('href', link);
+        }
+
+        function initialize() {
+            var latLng = new google.maps.LatLng(13.1783857457,121.27662565);
+            var map = new google.maps.Map(document.getElementById('mapCanvas'), {
+                //map zoom
+                zoom: 12,
+                center: latLng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                streetViewControl: false
+            });
+
+            var image = {
+                url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="512px" height="512px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd" xmlns:xlink="http://www.w3.org/1999/xlink"><g><path style="opacity:0.988" fill="#fc0039" d="M 236.5,-0.5 C 242.833,-0.5 249.167,-0.5 255.5,-0.5C 255.5,29.8333 255.5,60.1667 255.5,90.5C 215.626,92.0096 187.793,111.01 172,147.5C 159.075,188.651 168.908,223.151 201.5,251C 217.553,262.74 235.553,268.573 255.5,268.5C 255.5,349.5 255.5,430.5 255.5,511.5C 253.833,511.5 252.167,511.5 250.5,511.5C 247.614,510.121 245.114,508.121 243,505.5C 194,425.167 145,344.833 96,264.5C 74.1278,221.315 69.4611,176.315 82,129.5C 107.172,54.8248 158.672,11.4914 236.5,-0.5 Z"/></g><g><path style="opacity:1" fill="#e50027" d="M 255.5,-0.5 C 261.833,-0.5 268.167,-0.5 274.5,-0.5C 345.573,10.28 395.407,48.6133 424,114.5C 441.628,164.973 438.961,214.306 416,262.5C 366.667,343.833 317.333,425.167 268,506.5C 266.035,508.55 263.868,510.217 261.5,511.5C 259.5,511.5 257.5,511.5 255.5,511.5C 255.5,430.5 255.5,349.5 255.5,268.5C 294.161,267.427 321.661,249.427 338,214.5C 352.859,170.743 342.359,134.576 306.5,106C 291.158,95.4981 274.158,90.3314 255.5,90.5C 255.5,60.1667 255.5,29.8333 255.5,-0.5 Z"/></g></svg>'),
+                scaledSize: new google.maps.Size(50, 50)
+            };
+
+            var marker = new google.maps.Marker({
+                position: latLng,
+                title: 'Posisi Saya',
+                map: map,
+                draggable: false,
+                icon: image,
+            });
+
+            // Update current position info.
+            updateMarkerPosition(latLng);
+            geocodePosition(latLng);
+
+            // Add dragging event listeners.
+            //           google.maps.event.addListener(marker, 'dragstart', function() {
+            //             updateMarkerAddress('Dragging...');
+            //           });
+
+            //           google.maps.event.addListener(marker, 'drag', function() {
+            //             updateMarkerStatus('Dragging...');
+            //             updateMarkerPosition(marker.getPosition());
+            //           });
+
+            //           google.maps.event.addListener(marker, 'dragend', function() {
+            //             updateMarkerStatus('Drag ended');
+            //             geocodePosition(marker.getPosition());
+            //           });
+
+            map.addListener('center_changed', function () {
+                marker.setPosition(map.getCenter());
+                //updateMarkerStatus('Center of Map');
+                geocodePosition(marker.getPosition());
+                updateMarkerPosition(marker.getPosition());
+                updateMarkerURL(marker.getPosition());
+            });
+
+            if (navigator.geolocation) {
+
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    user_location = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                    map.setCenter(user_location);
+                });
+            } else {
+                /* Browser doesn't support Geolocation */
+            }
+        }
+
+        // Onload handler to fire off the app.
+        google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+</body>
+
+</html>
